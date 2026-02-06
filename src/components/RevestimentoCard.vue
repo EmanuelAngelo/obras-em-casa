@@ -47,6 +47,27 @@
         </v-col>
       </v-row>
 
+      <v-row>
+        <v-col cols="6">
+          <v-text-field
+            label="Preço por m² (R$)"
+            type="number"
+            :model-value="r.preco?.porM2 ?? 0"
+            @update:modelValue="
+              (v) => set({ preco: { ...(r.preco || {}), porM2: Number(v) } })
+            "
+          />
+        </v-col>
+
+        <v-col cols="6">
+          <v-text-field
+            label="Preço por caixa (R$) (auto)"
+            :model-value="precoPorCaixa ? precoPorCaixa.toFixed(2) : ''"
+            readonly
+          />
+        </v-col>
+      </v-row>
+
       <v-text-field
         label="Perda (%)"
         type="number"
@@ -60,6 +81,13 @@
 <script setup>
 import { computed } from "vue";
 import { useAppStore } from "@/stores/app";
+
+const precoPorCaixa = computed(() => {
+  const m2 = Number(r.value.caixas.m2PorCaixa) || 0;
+  const p = Number(r.value.preco?.porM2) || 0;
+  if (!m2 || !p) return 0;
+  return m2 * p;
+});
 
 const props = defineProps({
   tipo: { type: String, required: true }, // "piso" | "parede"
