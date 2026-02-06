@@ -14,6 +14,7 @@ declare module 'vue' {
     AmbientesEditor: typeof import('./src/components/AmbientesEditor.vue')['default']
     AppFooter: typeof import('./src/components/AppFooter.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
+    Projeto3D: typeof import('./src/components/Projeto3D.vue')['default']
     ProjetoForm: typeof import('./src/components/ProjetoForm.vue')['default']
     ResumoCompra: typeof import('./src/components/ResumoCompra.vue')['default']
     RevestimentoCard: typeof import('./src/components/RevestimentoCard.vue')['default']

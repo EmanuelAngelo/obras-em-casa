@@ -23,6 +23,7 @@
 
     <AmbientesEditor />
     <RevestimentosEditor />
+    <Projeto3D />
   </div>
 </template>
 
@@ -32,6 +33,7 @@ import ProjetoForm from "@/components/ProjetoForm.vue";
 import AmbientesEditor from "@/components/AmbientesEditor.vue";
 import RevestimentosEditor from "@/components/RevestimentosEditor.vue";
 import ResumoCompra from "@/components/ResumoCompra.vue";
+import Projeto3D from "@/components/Projeto3D.vue";
 
 const store = useAppStore();
 </script>
