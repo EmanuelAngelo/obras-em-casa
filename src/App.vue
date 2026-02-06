@@ -1,9 +1,5 @@
 <template>
-  <v-app>
+  <div class="min-h-screen bg-base-200">
     <router-view />
-  </v-app>
+  </div>
 </template>
-
-<script setup>
-  //
-</script>

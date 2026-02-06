@@ -1,86 +1,74 @@
 <template>
-  <v-card variant="tonal" rounded="lg">
-    <v-card-title>{{ titulo }}</v-card-title>
-    <v-card-text>
-      <v-text-field
-        label="Nome/modelo"
-        :model-value="r.nome"
-        @update:modelValue="(v) => set({ nome: v })"
-        placeholder="Ex: Porcelanato 60x60"
-      />
+  <div class="card bg-base-100 shadow">
+    <div class="card-body">
+      <h2 class="card-title">{{ titulo }}</h2>
 
-      <v-row>
-        <v-col cols="6">
-          <v-text-field
-            label="Largura peça (cm)"
-            type="number"
-            :model-value="r.dimensaoCm.largura"
-            @update:modelValue="(v) => setDim('largura', Number(v))"
-          />
-        </v-col>
-        <v-col cols="6">
-          <v-text-field
-            label="Comprimento peça (cm)"
-            type="number"
-            :model-value="r.dimensaoCm.comprimento"
-            @update:modelValue="(v) => setDim('comprimento', Number(v))"
-          />
-        </v-col>
-      </v-row>
+      <label class="form-control">
+        <div class="label"><span class="label-text">Descrição</span></div>
+        <input
+          class="input input-bordered"
+          placeholder="Ex: Piso 46x46 Tipo A Ipanema Bege Cerbras"
+          :value="r.nome"
+          @input="set({ nome: $event.target.value })"
+        />
+      </label>
 
-      <v-row>
-        <v-col cols="6">
-          <v-text-field
-            label="m² por caixa"
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <label class="form-control">
+          <div class="label"><span class="label-text">m² por caixa</span></div>
+          <input
             type="number"
-            :model-value="r.caixas.m2PorCaixa"
-            @update:modelValue="(v) => setCaixa('m2PorCaixa', Number(v))"
+            class="input input-bordered"
+            :value="r.caixas.m2PorCaixa"
+            @input="setCaixa('m2PorCaixa', Number($event.target.value))"
           />
-        </v-col>
-        <v-col cols="6">
-          <v-text-field
-            label="Peças por caixa"
+        </label>
+
+        <label class="form-control">
+          <div class="label"><span class="label-text">Preço por m² (R$)</span></div>
+          <input
             type="number"
-            :model-value="r.caixas.pecasPorCaixa"
-            @update:modelValue="(v) => setCaixa('pecasPorCaixa', Number(v))"
+            class="input input-bordered"
+            :value="r.preco?.porM2 ?? 0"
+            @input="set({ preco: { ...(r.preco || {}), porM2: Number($event.target.value) } })"
           />
-        </v-col>
-      </v-row>
+        </label>
 
-      <v-row>
-        <v-col cols="6">
-          <v-text-field
-            label="Preço por m² (R$)"
+        <label class="form-control">
+          <div class="label"><span class="label-text">Perda (%)</span></div>
+          <input
             type="number"
-            :model-value="r.preco?.porM2 ?? 0"
-            @update:modelValue="
-              (v) => set({ preco: { ...(r.preco || {}), porM2: Number(v) } })
-            "
+            class="input input-bordered"
+            :value="r.perdaPercent"
+            @input="set({ perdaPercent: Number($event.target.value) })"
           />
-        </v-col>
+        </label>
 
-        <v-col cols="6">
-          <v-text-field
-            label="Preço por caixa (R$) (auto)"
-            :model-value="precoPorCaixa ? precoPorCaixa.toFixed(2) : ''"
-            readonly
-          />
-        </v-col>
-      </v-row>
+        <div class="alert alert-info">
+          <span>
+            Preço por caixa (auto): <b>R$ {{ precoPorCaixa ? precoPorCaixa.toFixed(2) : "—" }}</b>
+          </span>
+        </div>
+      </div>
 
-      <v-text-field
-        label="Perda (%)"
-        type="number"
-        :model-value="r.perdaPercent"
-        @update:modelValue="(v) => set({ perdaPercent: Number(v) })"
-      />
-    </v-card-text>
-  </v-card>
+      <div class="text-xs opacity-70">
+        Dica: essa tela segue a lógica da etiqueta da loja (m²/caixa + preço/m² → preço/caixa).
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { computed } from "vue";
 import { useAppStore } from "@/stores/app";
+
+const props = defineProps({
+  tipo: { type: String, required: true },
+  titulo: { type: String, required: true },
+});
+
+const store = useAppStore();
+const r = computed(() => store.revestimentos[props.tipo]);
 
 const precoPorCaixa = computed(() => {
   const m2 = Number(r.value.caixas.m2PorCaixa) || 0;
@@ -89,20 +77,8 @@ const precoPorCaixa = computed(() => {
   return m2 * p;
 });
 
-const props = defineProps({
-  tipo: { type: String, required: true }, // "piso" | "parede"
-  titulo: { type: String, required: true },
-});
-
-const store = useAppStore();
-
-const r = computed(() => store.revestimentos[props.tipo]);
-
 function set(patch) {
   store.setRevestimento(props.tipo, patch);
-}
-function setDim(field, value) {
-  set({ dimensaoCm: { ...r.value.dimensaoCm, [field]: value } });
 }
 function setCaixa(field, value) {
   set({ caixas: { ...r.value.caixas, [field]: value } });

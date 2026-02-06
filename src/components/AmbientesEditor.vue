@@ -1,93 +1,122 @@
 <template>
-  <v-card rounded="lg">
-    <v-card-title class="d-flex align-center justify-space-between">
-      <span>Ambientes</span>
-      <v-btn @click="store.addAmbiente()">+ Adicionar</v-btn>
-    </v-card-title>
+  <div class="card bg-base-100 shadow">
+    <div class="card-body">
+      <div class="flex items-center justify-between gap-3">
+        <h2 class="card-title">Ambientes</h2>
+        <button class="btn btn-primary" @click="store.addAmbiente()">
+          + Adicionar
+        </button>
+      </div>
 
-    <v-card-text>
-      <v-alert v-if="!store.ambientes.length" type="info" variant="tonal">
-        Adicione os ambientes e informe <b>largura</b> e <b>comprimento</b> (em metros).
-        O app calcula automaticamente os m² do piso e, se ativar parede, calcula os m² da parede por perímetro.
-      </v-alert>
+      <div v-if="!store.ambientes.length" class="alert mt-4">
+        <span>
+          Adicione ambientes e informe <b>largura</b> e <b>comprimento</b> (m).
+          O app calcula automaticamente o piso e, se ativar parede, calcula por
+          <b>perímetro × altura</b>.
+        </span>
+      </div>
 
-      <v-row v-for="a in store.ambientes" :key="a.id" class="mb-4">
-        <v-col cols="12">
-          <v-card variant="tonal" rounded="lg">
-            <v-card-title class="d-flex align-center justify-space-between">
-              <span>{{ a.nome || "Novo ambiente" }}</span>
-              <v-btn icon="mdi-delete" variant="text" @click="store.removeAmbiente(a.id)" />
-            </v-card-title>
+      <div class="mt-4 space-y-4">
+        <div
+          v-for="a in store.ambientes"
+          :key="a.id"
+          class="card bg-base-200"
+        >
+          <div class="card-body gap-4">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <div class="font-semibold">
+                  {{ a.nome || "Novo ambiente" }}
+                </div>
+                <div class="text-xs opacity-70">
+                  Piso: <b>{{ areaPiso(a).toFixed(2) }} m²</b>
+                  <span v-if="a.parede?.aplicar">
+                    • Parede: <b>{{ areaParede(a).toFixed(2) }} m²</b>
+                  </span>
+                </div>
+              </div>
+              <button class="btn btn-ghost btn-sm" @click="store.removeAmbiente(a.id)">
+                ✕
+              </button>
+            </div>
 
-            <v-card-text>
-              <v-row>
-                <v-col cols="12" md="4">
-                  <v-text-field
-                    label="Nome"
-                    :model-value="a.nome"
-                    @update:modelValue="(v) => store.updateAmbiente(a.id, { nome: v })"
-                    placeholder="Ex: Sala"
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+              <label class="form-control">
+                <div class="label"><span class="label-text">Nome</span></div>
+                <input
+                  class="input input-bordered"
+                  placeholder="Ex: Sala"
+                  :value="a.nome"
+                  @input="store.updateAmbiente(a.id, { nome: $event.target.value })"
+                />
+              </label>
+
+              <label class="form-control">
+                <div class="label"><span class="label-text">Largura (m)</span></div>
+                <input
+                  type="number"
+                  class="input input-bordered"
+                  :value="a.dimensoes?.larguraM ?? 0"
+                  @input="patchDim(a.id, 'larguraM', Number($event.target.value))"
+                />
+              </label>
+
+              <label class="form-control">
+                <div class="label"><span class="label-text">Comprimento (m)</span></div>
+                <input
+                  type="number"
+                  class="input input-bordered"
+                  :value="a.dimensoes?.comprimentoM ?? 0"
+                  @input="patchDim(a.id, 'comprimentoM', Number($event.target.value))"
+                />
+              </label>
+
+              <label class="form-control">
+                <div class="label"><span class="label-text">Revestir paredes?</span></div>
+                <div class="flex items-center gap-3 h-12">
+                  <input
+                    type="checkbox"
+                    class="toggle toggle-primary"
+                    :checked="Boolean(a.parede?.aplicar)"
+                    @change="patchParede(a.id, { aplicar: $event.target.checked })"
                   />
-                </v-col>
+                  <span class="text-sm opacity-70">Ativar</span>
+                </div>
+              </label>
+            </div>
 
-                <v-col cols="6" md="4">
-                  <v-text-field
-                    label="Largura (m)"
-                    type="number"
-                    :model-value="a.dimensoes?.larguraM ?? 0"
-                    @update:modelValue="(v) => patchDim(a.id, 'larguraM', Number(v))"
-                  />
-                </v-col>
+            <div v-if="a.parede?.aplicar" class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <label class="form-control">
+                <div class="label">
+                  <span class="label-text">Altura do revestimento (m)</span>
+                </div>
+                <input
+                  type="number"
+                  class="input input-bordered"
+                  placeholder="Ex: 1.20 / 2.60"
+                  :value="a.parede?.alturaM ?? 0"
+                  @input="patchParede(a.id, { alturaM: Number($event.target.value) })"
+                />
+              </label>
 
-                <v-col cols="6" md="4">
-                  <v-text-field
-                    label="Comprimento (m)"
-                    type="number"
-                    :model-value="a.dimensoes?.comprimentoM ?? 0"
-                    @update:modelValue="(v) => patchDim(a.id, 'comprimentoM', Number(v))"
-                  />
-                </v-col>
+              <div class="alert alert-info md:col-span-2">
+                <span>
+                  Parede = perímetro × altura.
+                  (Depois adicionamos descontos de porta/janela e box.)
+                </span>
+              </div>
+            </div>
 
-                <v-col cols="12" md="4">
-                  <v-switch
-                    inset
-                    label="Revestir paredes neste ambiente?"
-                    :model-value="Boolean(a.parede?.aplicar)"
-                    @update:modelValue="(v) => patchParede(a.id, { aplicar: Boolean(v) })"
-                  />
-                </v-col>
+          </div>
+        </div>
+      </div>
 
-                <v-col cols="12" md="4" v-if="a.parede?.aplicar">
-                  <v-text-field
-                    label="Altura do revestimento (m)"
-                    type="number"
-                    :model-value="a.parede?.alturaM ?? 0"
-                    @update:modelValue="(v) => patchParede(a.id, { alturaM: Number(v) })"
-                    placeholder="Ex: 1.20 (cozinha) / 2.60 (até o teto)"
-                  />
-                </v-col>
-
-                <v-col cols="12" md="4" class="d-flex flex-column justify-center">
-                  <div class="text-caption text-medium-emphasis">Cálculo automático</div>
-                  <div class="text-body-2">
-                    Piso: <b>{{ areaPiso(a).toFixed(2) }} m²</b>
-                    <span v-if="a.parede?.aplicar">
-                      | Parede: <b>{{ areaParede(a).toFixed(2) }} m²</b>
-                    </span>
-                  </div>
-                </v-col>
-              </v-row>
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-card-text>
-  </v-card>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { useAppStore } from "@/stores/app";
-
 const store = useAppStore();
 
 function patchDim(id, field, value) {
@@ -111,13 +140,10 @@ function areaPiso(a) {
 }
 
 function areaParede(a) {
-  const aplicar = Boolean(a.parede?.aplicar);
-  if (!aplicar) return 0;
-
+  if (!a.parede?.aplicar) return 0;
   const w = Number(a.dimensoes?.larguraM) || 0;
   const l = Number(a.dimensoes?.comprimentoM) || 0;
   const h = Number(a.parede?.alturaM) || 0;
-
   const perimetro = 2 * (w + l);
   return perimetro * h;
 }

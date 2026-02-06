@@ -1,17 +1,8 @@
 <template>
-  <v-card rounded="lg">
-    <v-card-title>Revestimentos</v-card-title>
-    <v-card-text>
-      <v-row>
-        <v-col cols="12" md="6">
-          <RevestimentoCard tipo="piso" titulo="Piso (chão)" />
-        </v-col>
-        <v-col cols="12" md="6">
-          <RevestimentoCard tipo="parede" titulo="Revestimento (parede)" />
-        </v-col>
-      </v-row>
-    </v-card-text>
-  </v-card>
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <RevestimentoCard tipo="piso" titulo="Piso (chão)" />
+    <RevestimentoCard tipo="parede" titulo="Revestimento (parede)" />
+  </div>
 </template>
 
 <script setup>

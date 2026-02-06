@@ -1,46 +1,41 @@
 <template>
-  <v-card rounded="lg">
-    <v-card-title>Resumo</v-card-title>
-    <v-card-text>
-      <v-row>
-        <v-col cols="6">
-          <div class="text-caption text-medium-emphasis">Área chão</div>
-          <div class="text-h6">{{ store.totalAreaChao.toFixed(2) }} m²</div>
-        </v-col>
-        <v-col cols="6">
-          <div class="text-caption text-medium-emphasis">Área parede</div>
-          <div class="text-h6">{{ store.totalAreaParede.toFixed(2) }} m²</div>
-        </v-col>
-      </v-row>
+  <div class="card bg-base-100 shadow">
+    <div class="card-body">
+      <h2 class="card-title">Resumo</h2>
 
-      <v-divider class="my-3" />
+      <div class="stats stats-vertical md:stats-horizontal shadow bg-base-200">
+        <div class="stat">
+          <div class="stat-title">Área chão</div>
+          <div class="stat-value text-2xl">{{ store.totalAreaChao.toFixed(2) }}</div>
+          <div class="stat-desc">m²</div>
+        </div>
+        <div class="stat">
+          <div class="stat-title">Área parede</div>
+          <div class="stat-value text-2xl">{{ store.totalAreaParede.toFixed(2) }}</div>
+          <div class="stat-desc">m²</div>
+        </div>
+      </div>
 
-      <div class="text-subtitle-2 mb-2">Estimativa por caixa (se m²/caixa informado)</div>
+      <div class="divider"></div>
 
-      <v-row>
-        <v-col cols="12" md="6">
-          <v-alert variant="tonal" type="info">
-            Piso: {{ calc("piso", store.totalAreaChao) }}
-          </v-alert>
-        </v-col>
-        <v-col cols="12" md="6">
-          <v-alert variant="tonal" type="info">
-            Parede: {{ calc("parede", store.totalAreaParede) }}
-          </v-alert>
-        </v-col>
-      </v-row>
-    </v-card-text>
-  </v-card>
+      <div class="space-y-3">
+        <div class="alert alert-info">
+          <span><b>Piso:</b> {{ calc("piso", store.totalAreaChao) }}</span>
+        </div>
+        <div class="alert alert-info">
+          <span><b>Parede:</b> {{ calc("parede", store.totalAreaParede) }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { useAppStore } from "@/stores/app";
-
 const store = useAppStore();
 
 function calc(tipo, areaBase) {
   const r = store.revestimentos[tipo];
-
   const perda = (Number(r.perdaPercent) || 0) / 100;
   const areaNecessaria = areaBase * (1 + perda);
 
@@ -54,12 +49,10 @@ function calc(tipo, areaBase) {
   const precoPorCaixa = precoPorM2 ? m2PorCaixa * precoPorM2 : 0;
   const total = precoPorCaixa ? caixas * precoPorCaixa : 0;
 
-  const parteCaixas = `Você vai precisar de ${caixas} caixa(s).`;
-  const parteM2 = `Necessário: ${areaNecessaria.toFixed(2)} m² | Comprado: ${m2Comprado.toFixed(2)} m².`;
+  const parte = `QUANTIDADE (m²): ${areaNecessaria.toFixed(2)} | Você vai precisar de ${caixas} caixa(s).`;
 
-  if (!precoPorM2) return `${parteCaixas} ${parteM2} Informe preço por m² para estimar custo.`;
+  if (!precoPorM2) return `${parte} (Informe preço por m² para estimar custo.)`;
 
-  return `${parteCaixas} ${parteM2} Valor por caixa: R$ ${precoPorCaixa.toFixed(2)} | Total: R$ ${total.toFixed(2)}.`;
+  return `${parte} Valor por caixa: R$ ${precoPorCaixa.toFixed(2)} | Total: R$ ${total.toFixed(2)} | m² comprado: ${m2Comprado.toFixed(2)}.`;
 }
-
 </script>
