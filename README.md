@@ -1,189 +1,184 @@
 # 🏠 Obras em Casa
 
-Aplicação frontend desenvolvida em **Vue 3 + Vuetify** para auxiliar no **cálculo de compra de pisos e revestimentos** (chão e parede), permitindo ao usuário planejar sua obra sem perder dados, mesmo ao fechar o navegador.
+**Planejador inteligente de compra de pisos e revestimentos com cálculo realista de obra e visualização 3D dinâmica.**
 
-Todos os dados são **salvos automaticamente em cookies**, sem necessidade de backend nesta primeira fase.
+Este projeto nasceu de uma dor real: ir à loja de material de construção, ver a etiqueta do piso e **não saber quantas caixas comprar**. A partir disso, o *Obras em Casa* evoluiu para um **planejador completo**, que calcula áreas como na vida real e ainda gera uma **prévia 3D automática do projeto**.
 
 ---
 
 ## 🎯 Objetivo do Projeto
 
-Resolver uma dor comum durante obras:
-
-> *“Tenho os metros quadrados da minha casa, vejo o preço do piso na loja, mas não sei quantas caixas comprar.”*
-
-O **Obras em Casa** permite:
-- Criar um projeto de obra
-- Cadastrar ambientes (sala, cozinha, quartos, banheiro, etc.)
-- Definir se o revestimento será apenas no chão ou também na parede
-- Calcular área total
-- Estimar quantidade de caixas considerando perda
+Ajudar qualquer pessoa (leigo ou profissional) a:
+- Calcular corretamente pisos e revestimentos
+- Evitar compra errada de caixas
+- Considerar perdas, box, portas e janelas
+- Visualizar o projeto em 3D antes da compra
+- Levar para a loja uma lista clara e confiável
 
 ---
 
-## 🧱 Funcionalidades Atuais (MVP)
+## 🚀 Funcionalidades Principais
 
-### 📁 Projeto
-- Nome do projeto
-- Data de criação automática
-- Reset completo dos dados
+### 🏗️ Ambientes (Cálculo Real de Obra)
+- Cadastro de ambientes por **largura × comprimento (m)**
+- Área de piso calculada automaticamente
+- Revestimento de parede por **perímetro × altura**
+- Descontos de área para:
+  - Portas
+  - Janelas
+  - Outros recortes
 
-### 🏠 Ambientes
-- Cadastro de múltiplos ambientes
-- Tipos:
-  - Chão
-  - Parede
-- Área em m² por ambiente
-- Edição e remoção
+### 🚿 Box do Banheiro (inteligência automática)
+- O box só aparece se o ambiente for reconhecido como **banheiro**
+  - Funciona para: `Banheiro`, `banheiro casal`, `Banheiro suíte`, `banheiro de baixo`, etc.
+- Cálculo do box com **3 paredes**
+- Altura própria do box
+- Descontos específicos do box
 
-### 🧩 Revestimentos
-- Piso (chão)
-- Revestimento de parede
-- Informações configuráveis:
-  - Nome / modelo
-  - Dimensão da peça (cm)
-  - m² por caixa
-  - Peças por caixa
-  - Percentual de perda
+### 🏷️ Produtos / Revestimentos (modelo de etiqueta de loja)
+Baseado em etiquetas reais de lojas como a Potiguar:
 
-### 📊 Resumo
-- Área total de chão
-- Área total de parede
-- Estimativa automática de caixas
-- Cálculo considerando percentual de perda
+```
+Piso 46x46cm Tipo A Ipanema Bege Cerbras - 2,30m²
+R$ 34,90 (por m²)
+Você vai precisar de 1 caixa
+Valor: R$ 80,27
+```
 
-### 💾 Persistência
-- Salvamento automático em **cookies**
-- Dados persistem ao recarregar ou fechar o navegador
+O sistema trabalha com:
+- m² por caixa
+- preço por m²
+- preço por caixa (calculado automaticamente)
+- percentual de perda (10%, 15%, 20% ou personalizado)
+
+### 📊 Resumo de Compra (estilo loja)
+- Área necessária (com perda)
+- Área efetivamente comprada
+- Quantidade de caixas (arredondamento real)
+- Valor por caixa
+- Valor total
+
+Texto no formato:
+> “Você vai precisar de X caixas. Valor total: R$ Y.”
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## 🧱 Visualização 3D Dinâmica (Diferencial Forte)
+
+O projeto gera automaticamente um **preview 3D** com base nos dados informados:
+
+- Piso como base volumétrica
+- Paredes com altura real
+- Box do banheiro em formato U (3 paredes)
+- Organização automática dos ambientes no espaço
+- Câmera com controle livre (OrbitControls)
+
+⚠️ **Não é mock nem imagem fake** — o 3D é calculado em tempo real a partir das medidas reais do projeto.
+
+---
+
+## 🧠 Inteligência do Sistema
+
+- Reconhecimento automático de ambientes do tipo banheiro
+- Desativação automática do box se o ambiente deixar de ser banheiro
+- Prevenção de áreas negativas (descontos maiores que a parede)
+- Arredondamento sempre para cima (caixas inteiras)
+
+---
+
+## 💾 Persistência de Dados
+
+- Salvamento automático em cookies
+- Dados mantidos mesmo ao fechar o navegador
+- Estrutura preparada para versionamento de schema
+
+---
+
+## 🎨 Interface
+
+- **Tailwind CSS**
+- **daisyUI**
+- Design limpo, moderno e mobile-friendly
+- Preparado para uso como **PWA**
+
+---
+
+## 🧩 Stack Técnica
 
 - **Vue 3** (Composition API)
-- **Vuetify 3** (UI Components)
-- **Pinia** (Gerenciamento de estado)
-- **Vue Router**
-- **js-cookie** (Persistência local)
-- **Vite** (Build e Dev Server)
+- **Vite**
+- **Pinia** (estado global)
+- **Vue Router + Layouts**
+- **Tailwind CSS + daisyUI**
+- **Three.js** (visualização 3D)
 
 ---
 
 ## 📁 Estrutura do Projeto
 
 ```
-obras-em-casa/
-├── src/
-│   ├── components/
-│   │   ├── ProjetoForm.vue
-│   │   ├── AmbientesEditor.vue
-│   │   ├── RevestimentosEditor.vue
-│   │   ├── RevestimentoCard.vue
-│   │   └── ResumoCompra.vue
-│   ├── models/
-│   │   └── defaults.js
-│   ├── services/
-│   │   └── cookieStorage.js
-│   ├── stores/
-│   │   └── app.store.js
-│   ├── views/
-│   │   └── HomeView.vue
-│   ├── router/
-│   │   └── index.js
-│   ├── App.vue
-│   └── main.js
-├── public/
-├── package.json
-└── README.md
+src/
+├── components/
+│   ├── AmbientesEditor.vue
+│   ├── Projeto3D.vue
+│   ├── ProjetoForm.vue
+│   ├── RevestimentoCard.vue
+│   ├── RevestimentosEditor.vue
+│   └── ResumoCompra.vue
+│
+├── models/
+│   └── defaults.js
+│
+├── services/
+│   └── cookieStorage.js
+│
+├── stores/
+│   └── app.store.js
+│
+├── styles/
+│   └── main.css
+│
+├── views/
+│   └── HomeView.vue
+│
+└── main.js
 ```
 
 ---
 
 ## ▶️ Como Rodar o Projeto
 
-### 1️⃣ Criar o projeto
-```bash
-npm create vuetify@latest obras-em-casa
-cd obras-em-casa
-```
-
-### 2️⃣ Instalar dependências
 ```bash
 npm install
-npm install js-cookie
-```
-
-### 3️⃣ Rodar em modo desenvolvimento
-```bash
 npm run dev
 ```
 
 Acesse:
 ```
-http://localhost:5173
+http://localhost:3000
 ```
 
 ---
 
-## 🔀 Router
+## 🗺️ Roadmap
 
-O projeto utiliza **router-view** como tela principal.
-
-Rota padrão:
-```js
-{
-  path: '/',
-  name: 'home',
-  component: HomeView
-}
-```
-
----
-
-## 🧠 Gerenciamento de Estado
-
-O estado global é controlado pelo **Pinia**:
-
-- Projeto
-- Ambientes
-- Revestimentos
-
-Toda alteração dispara salvamento automático em cookies.
-
----
-
-## 🔒 Persistência em Cookies
-
-- Biblioteca: `js-cookie`
-- Duração: **30 dias**
-- Chave usada:
-```txt
-obras_em_casa_state
-```
-
-Funções principais:
-- `loadState()`
-- `saveState(state)`
-- `clearState()`
-
----
-
-## 🚧 Próximas Evoluções Planejadas
-
-- Cálculo de parede por **altura (até X metros)**
-- Cálculo automático por **dimensão da peça**
-- Templates de ambientes prontos
-- Modo wizard (passo a passo)
-- Exportação para **PDF / checklist de compra**
-- Backend futuro (API em Python / Django)
+### Próximos passos planejados
+- Produtos como lista (múltiplos pisos e revestimentos)
+- Vínculo produto ↔ ambientes / box
+- Resumo separado por produto
+- Texturas no 3D (piso, parede, box)
+- Exportar imagem do projeto 3D
+- Exportar PDF / checklist de compra
+- Modo Wizard (passo a passo)
+- PWA instalável (ícone no celular)
 
 ---
 
 ## 👨‍💻 Autor
 
-Projeto idealizado e desenvolvido para resolver uma dor real em obras residenciais.
+Projeto criado a partir de uma necessidade real de obra, evoluindo para uma ferramenta profissional de planejamento.
 
-**Nome:** Manel
+**Manel**
 
 ---
 
@@ -193,5 +188,5 @@ Uso livre para fins educacionais e pessoais.
 
 ---
 
-🚀 *Projeto em evolução contínua.*
+🚀 *Este projeto já resolve um problema real — e ainda está em evolução.*
 
