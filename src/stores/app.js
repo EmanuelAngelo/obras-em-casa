@@ -12,15 +12,29 @@ export const useAppStore = defineStore("app", {
   getters: {
     // área total por tipo (chão/parede)
     totalAreaChao(state) {
-      return state.ambientes
-        .filter((a) => a.tipo === "chao")
-        .reduce((sum, a) => sum + (Number(a.area) || 0), 0);
+      // soma (largura × comprimento) de cada ambiente
+      return state.ambientes.reduce((sum, a) => {
+        const w = Number(a.dimensoes?.larguraM) || 0;
+        const l = Number(a.dimensoes?.comprimentoM) || 0;
+        return sum + w * l;
+      }, 0);
     },
+
     totalAreaParede(state) {
-      return state.ambientes
-        .filter((a) => a.tipo === "parede")
-        .reduce((sum, a) => sum + (Number(a.area) || 0), 0);
+      // soma (perímetro × altura) dos ambientes com parede.aplicar
+      return state.ambientes.reduce((sum, a) => {
+        const aplicar = Boolean(a.parede?.aplicar);
+        if (!aplicar) return sum;
+
+        const w = Number(a.dimensoes?.larguraM) || 0;
+        const l = Number(a.dimensoes?.comprimentoM) || 0;
+        const h = Number(a.parede?.alturaM) || 0;
+
+        const perimetro = 2 * (w + l);
+        return sum + perimetro * h;
+      }, 0);
     },
+
   },
 
   actions: {
@@ -29,10 +43,16 @@ export const useAppStore = defineStore("app", {
       this._persist();
     },
 
-    addAmbiente({ nome = "", tipo = "chao", area = 0 } = {}) {
-      this.ambientes.push({ id: uid("amb"), nome, tipo, area });
+    addAmbiente({ nome = "", larguraM = 0, comprimentoM = 0 } = {}) {
+      this.ambientes.push({
+        id: uid("amb"),
+        nome,
+        dimensoes: { larguraM, comprimentoM },
+        parede: { aplicar: false, alturaM: 0 },
+      });
       this._persist();
     },
+
 
     updateAmbiente(id, patch) {
       const idx = this.ambientes.findIndex((a) => a.id === id);
