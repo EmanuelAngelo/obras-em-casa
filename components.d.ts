@@ -13,6 +13,8 @@ declare module 'vue' {
   export interface GlobalComponents {
     AmbientesEditor: typeof import('./src/components/AmbientesEditor.vue')['default']
     AppFooter: typeof import('./src/components/AppFooter.vue')['default']
+    ChecklistPrint: typeof import('./src/components/ChecklistPrint.vue')['default']
+    ExportarPdfButton: typeof import('./src/components/ExportarPdfButton.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     ProdutosEditor: typeof import('./src/components/ProdutosEditor.vue')['default']
     Projeto3D: typeof import('./src/components/Projeto3D.vue')['default']
@@ -23,5 +25,6 @@ declare module 'vue' {
     RevestimentosEditor: typeof import('./src/components/RevestimentosEditor.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Wizard: typeof import('./src/components/Wizard.vue')['default']
   }
 }
