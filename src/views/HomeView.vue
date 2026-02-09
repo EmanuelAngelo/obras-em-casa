@@ -18,11 +18,11 @@
     <!-- Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <ProjetoForm />
-      <ResumoCompra />
+      <ResumoPorProduto />
     </div>
 
     <AmbientesEditor />
-    <RevestimentosEditor />
+    <ProdutosEditor />
     <Projeto3D />
   </div>
 </template>
@@ -31,9 +31,9 @@
 import { useAppStore } from "@/stores/app";
 import ProjetoForm from "@/components/ProjetoForm.vue";
 import AmbientesEditor from "@/components/AmbientesEditor.vue";
-import RevestimentosEditor from "@/components/RevestimentosEditor.vue";
-import ResumoCompra from "@/components/ResumoCompra.vue";
 import Projeto3D from "@/components/Projeto3D.vue";
+import ProdutosEditor from "@/components/ProdutosEditor.vue";
+import ResumoPorProduto from "@/components/ResumoPorProduto.vue";
 
 const store = useAppStore();
 </script>
