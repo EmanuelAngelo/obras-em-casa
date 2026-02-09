@@ -16,6 +16,7 @@ declare module 'vue' {
     ChecklistPrint: typeof import('./src/components/ChecklistPrint.vue')['default']
     ExportarPdfButton: typeof import('./src/components/ExportarPdfButton.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
+    MeusProjetos: typeof import('./src/components/MeusProjetos.vue')['default']
     ProdutosEditor: typeof import('./src/components/ProdutosEditor.vue')['default']
     Projeto3D: typeof import('./src/components/Projeto3D.vue')['default']
     ProjetoForm: typeof import('./src/components/ProjetoForm.vue')['default']

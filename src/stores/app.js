@@ -53,6 +53,11 @@ function uid(prefix = "id") {
   return `${prefix}-${Math.random().toString(16).slice(2)}-${Date.now()}`;
 }
 
+function deepClone(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
+
 /* -----------------------------
  * Migração / Normalização do state
  * ----------------------------- */
@@ -77,6 +82,8 @@ function normalizeState(raw) {
   // garante arrays
   if (!Array.isArray(merged.ambientes)) merged.ambientes = [];
   if (!Array.isArray(merged.produtos)) merged.produtos = [];
+  if (!Array.isArray(merged.projetos)) merged.projetos = [];
+
 
   // garante estrutura mínima dos ambientes (para não quebrar cálculos)
   merged.ambientes = merged.ambientes.map((a) => ({
@@ -340,11 +347,14 @@ export const useAppStore = defineStore("app", {
 
     /* -------- Reset / Persist -------- */
     resetAll() {
+      const keep = Array.isArray(this.projetos) ? this.projetos : [];
       const fresh = defaultState();
       Object.assign(this, fresh);
+      this.projetos = keep;   // ✅ mantém os projetos salvos
       clearState();
       this._persist();
     },
+
 
     _persist() {
       saveState({
@@ -352,7 +362,56 @@ export const useAppStore = defineStore("app", {
         projeto: this.projeto,
         ambientes: this.ambientes,
         produtos: this.produtos,
+        projetos: this.projetos,
       });
     },
+
+    /* Salvando projetos */
+
+    saveCurrentProject() {
+      if (!Array.isArray(this.projetos)) this.projetos = [];
+
+      const nome =
+        (this.projeto?.nome || "").trim() || `Projeto ${this.projetos.length + 1}`;
+
+      const snapshot = {
+        id: uid("proj"),
+        nome,
+        createdAt: new Date().toISOString(),
+        data: {
+          schemaVersion: this.schemaVersion || 2,
+          projeto: { ...deepClone(this.projeto || {}), nome },
+          ambientes: deepClone(this.ambientes || []),
+          produtos: deepClone(this.produtos || []),
+        },
+      };
+
+      this.projetos.unshift(snapshot);
+      this._persist();
+      return snapshot.id;
+    },
+
+
+
+    loadProjectById(projectId) {
+      const p = (this.projetos || []).find((x) => x.id === projectId);
+      if (!p) return false;
+
+      this.schemaVersion = p.data.schemaVersion || 2;
+      this.projeto = deepClone(p.data.projeto || {});
+      this.ambientes = deepClone(p.data.ambientes || []);
+      this.produtos = deepClone(p.data.produtos || []);
+
+      this._persist();
+      return true;
+    },
+
+
+
+    deleteProjectById(projectId) {
+      this.projetos = (this.projetos || []).filter(x => x.id !== projectId);
+      this._persist();
+    },
+
   },
 });
