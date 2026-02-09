@@ -8,12 +8,14 @@
         </div>
       </div>
       <div class="flex-none gap-2">
-        <button class="btn btn-outline" @click="store.resetAll()">Zerar tudo</button>
+        <button class="btn btn-outline" @click="resetWizard">Zerar tudo</button>
       </div>
     </div>
 
     <!-- Steps -->
-    <ul class="steps steps-vertical lg:steps-horizontal w-full bg-base-100 rounded-box shadow p-4">
+    <ul
+      class="steps steps-vertical lg:steps-horizontal w-full bg-base-100 rounded-box shadow p-4"
+    >
       <li class="step" :class="step >= 1 ? 'step-primary' : ''">Ambientes</li>
       <li class="step" :class="step >= 2 ? 'step-primary' : ''">Paredes/Box</li>
       <li class="step" :class="step >= 3 ? 'step-primary' : ''">Produtos</li>
@@ -36,7 +38,10 @@
 
       <template v-else-if="step === 3">
         <div class="alert alert-info">
-          <span>Cadastre os produtos conforme a etiqueta e vincule aos ambientes.</span>
+          <span
+            >Cadastre os produtos conforme a etiqueta e vincule aos
+            ambientes.</span
+          >
         </div>
         <ProdutosEditor />
       </template>
@@ -81,6 +86,12 @@ const canNext = computed(() => {
   if (step.value === 3) return (store.produtos?.length || 0) > 0;
   return true;
 });
+
+function resetWizard() {
+  store.resetAll();   // limpa dados
+  step.value = 1;     // volta para o primeiro passo
+}
+
 
 function next() {
   if (step.value < 4) step.value += 1;
