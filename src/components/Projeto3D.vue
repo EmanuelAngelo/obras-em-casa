@@ -128,6 +128,33 @@ function addRoom({ a, w, l, pos }) {
     g.add(wallR);
   }
 
+  // --- Nome do cômodo como Sprite 3D ---
+  if (a.nome) {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const fontSize = 36;
+    canvas.width = 512;
+    canvas.height = 128;
+    ctx.font = `bold ${fontSize}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#222';
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#222';
+    ctx.fillText(a.nome, canvas.width / 2, canvas.height / 2);
+    const texture = new THREE.CanvasTexture(canvas);
+    const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
+    const sprite = new THREE.Sprite(material);
+    // Ajuste de escala para o texto ficar legível
+    sprite.scale.set(Math.max(w, 2), 0.5, 1);
+    // Posição: centro do piso, acima das paredes (ou 1.2m se não houver parede)
+    let y = h > 0 ? h + 0.3 : 1.2;
+    sprite.position.set(pos.x, y, pos.z);
+    g.add(sprite);
+  }
+
   return g;
 }
 
