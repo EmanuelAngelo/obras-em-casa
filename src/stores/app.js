@@ -158,7 +158,10 @@ function normalizeState(raw) {
  * Store
  * ----------------------------- */
 export const useAppStore = defineStore("app", {
-  state: () => normalizeState(loadState()),
+  state: () => ({
+    ...normalizeState(loadState()),
+    dirty: false,
+  }),
 
   getters: {
     // Soma total de áreas (úteis para exibir no topo)
@@ -214,6 +217,12 @@ export const useAppStore = defineStore("app", {
   },
 
   actions: {
+        markDirty() {
+          this.dirty = true;
+        },
+        markSaved() {
+          this.dirty = false;
+        },
     /* -------- Projeto -------- */
     setProjetoNome(nome) {
       this.projeto.nome = nome;
@@ -371,24 +380,38 @@ export const useAppStore = defineStore("app", {
     saveCurrentProject() {
       if (!Array.isArray(this.projetos)) this.projetos = [];
 
-      const nome =
-        (this.projeto?.nome || "").trim() || `Projeto ${this.projetos.length + 1}`;
+      const nome = (this.projeto?.nome || "").trim() || `Projeto ${this.projetos.length + 1}`;
+      let id = this.projeto?.id;
+      let createdAt = this.projeto?.createdAt;
+      if (!id) {
+        id = uid("proj");
+        createdAt = new Date().toISOString();
+      }
 
       const snapshot = {
-        id: uid("proj"),
+        id,
         nome,
-        createdAt: new Date().toISOString(),
+        createdAt,
         data: {
           schemaVersion: this.schemaVersion || 2,
-          projeto: { ...deepClone(this.projeto || {}), nome },
+          projeto: { ...deepClone(this.projeto || {}), nome, id, createdAt },
           ambientes: deepClone(this.ambientes || []),
           produtos: deepClone(this.produtos || []),
         },
       };
 
-      this.projetos.unshift(snapshot);
+      // Atualiza se já existe, senão adiciona
+      const idx = this.projetos.findIndex(p => p.id === id);
+      if (idx >= 0) {
+        this.projetos[idx] = snapshot;
+      } else {
+        this.projetos.unshift(snapshot);
+      }
+      this.projeto.id = id;
+      this.projeto.createdAt = createdAt;
       this._persist();
-      return snapshot.id;
+      this.markSaved();
+      return id;
     },
 
 

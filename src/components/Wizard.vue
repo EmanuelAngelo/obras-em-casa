@@ -59,7 +59,7 @@
             <button
               class="btn btn-primary"
               @click="saveProject"
-              :disabled="saving"
+              :disabled="saving || !store.dirty"
             >
               <span v-if="!saving">Salvar projeto</span>
               <span v-else class="loading loading-spinner loading-sm"></span>
@@ -81,7 +81,7 @@
       <button
         class="btn btn-primary"
         @click="onPrimary"
-        :disabled="!canNext || saving"
+        :disabled="!canNext || saving || (step === 4 && !store.dirty)"
       >
         <span v-if="step !== 4">Avançar</span>
         <span v-else>
