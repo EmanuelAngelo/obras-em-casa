@@ -226,6 +226,7 @@ export const useAppStore = defineStore("app", {
     /* -------- Projeto -------- */
     setProjetoNome(nome) {
       this.projeto.nome = nome;
+      this.markDirty();
       this._persist();
     },
 
@@ -242,7 +243,7 @@ export const useAppStore = defineStore("app", {
         preco: { porM2: Number(payload.precoPorM2) || 0 },
         perdaPercent: Number(payload.perdaPercent) || 10,
       });
-
+      this.markDirty();
       this._persist();
     },
 
@@ -259,12 +260,14 @@ export const useAppStore = defineStore("app", {
         if (patch.ambientes) next.ambientes = Array.isArray(patch.ambientes) ? patch.ambientes : atual.ambientes;
 
         this.produtos[i] = next;
+        this.markDirty();
         this._persist();
       }
     },
 
     removeProduto(id) {
       this.produtos = (this.produtos || []).filter((p) => p.id !== id);
+      this.markDirty();
       this._persist();
     },
 
@@ -275,7 +278,7 @@ export const useAppStore = defineStore("app", {
       const set = new Set(p.ambientes || []);
       set.has(ambienteId) ? set.delete(ambienteId) : set.add(ambienteId);
       p.ambientes = Array.from(set);
-
+      this.markDirty();
       this._persist();
     },
 
@@ -290,7 +293,7 @@ export const useAppStore = defineStore("app", {
         parede: { aplicar: false, alturaM: 0, descontos: [] },
         box: { aplicar: false, larguraM: 0, comprimentoM: 0, alturaM: 0, descontos: [] },
       });
-
+      this.markDirty();
       this._persist();
     },
 
@@ -305,19 +308,19 @@ export const useAppStore = defineStore("app", {
         if (patch.box) next.box = { ...atual.box, ...patch.box };
 
         this.ambientes[idx] = next;
+        this.markDirty();
         this._persist();
       }
     },
 
     removeAmbiente(id) {
       this.ambientes = (this.ambientes || []).filter((a) => a.id !== id);
-
       // remove o ambiente de qualquer produto que esteja vinculando
       this.produtos = (this.produtos || []).map((p) => ({
         ...p,
         ambientes: (p.ambientes || []).filter((ambId) => ambId !== id),
       }));
-
+      this.markDirty();
       this._persist();
     },
 
@@ -340,6 +343,7 @@ export const useAppStore = defineStore("app", {
       this.updateAmbiente(ambienteId, {
         [key]: { ...a[key], descontos: [...descontos, item] },
       });
+      this.markDirty();
     },
 
     removeDesconto(ambienteId, alvo, descontoId) {
@@ -352,6 +356,7 @@ export const useAppStore = defineStore("app", {
       this.updateAmbiente(ambienteId, {
         [key]: { ...a[key], descontos },
       });
+      this.markDirty();
     },
 
     /* -------- Reset / Persist -------- */
