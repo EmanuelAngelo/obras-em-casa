@@ -1,4 +1,12 @@
 # 🏠 Obras em Casa
+#
+## 🆕 Novas Funcionalidades (2026)
+
+- **Internacionalização automática:** O idioma do app é detectado automaticamente conforme o idioma do dispositivo do usuário (usando vue-i18n). Todos os textos podem ser traduzidos facilmente via arquivos de tradução.
+- **Botões de salvar inteligentes:** Os botões "Salvar projeto" e "Concluir (Salvar)" só ficam ativos se houver alterações não salvas. Após salvar, ficam desabilitados até que algo seja editado novamente.
+- **Atualização de projetos:** Ao salvar um projeto já existente, ele é atualizado (não duplicado). O sistema mantém o histórico e evita múltiplos projetos iguais.
+- **Controle de alterações (dirty):** O app detecta qualquer modificação relevante e só permite salvar se houver mudanças.
+
 
 **Planejador inteligente de compra de pisos e revestimentos, com cálculo real de obra, fluxo guiado (wizard), exportação de PDF e visualização 3D dinâmica.**
 
